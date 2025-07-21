@@ -73,8 +73,24 @@ class PGVectorRemote(VectorStore):
             for document in response.json()
         ]
 
-    # def add_embedding():
-    #     pass
+    def add_embeddings(
+        self,
+        embeddings: list[list[float]],
+        texts: None | list[dict] = None,
+        metadatas: None | list[dict] = None,
+        ids: None | list[str] = None,
+        **kwargs: Any,
+    ):
+
+        if metadatas[0].get("type") == "user_identity":
+            return []
+
+        requests.post(
+            "http://localhost:8082/add-embeddings",
+            json={"embeddings": embeddings, "metadatas": metadatas, "ids": ids},
+        )
+
+        return [ids]
 
     def add_texts(
         self,

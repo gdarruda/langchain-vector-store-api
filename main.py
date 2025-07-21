@@ -32,6 +32,12 @@ class AddTextsPayload(BaseModel):
     ids: list[str]
 
 
+class AddEmbeddingsPayload(BaseModel):
+    embeddings: list[list[float]]
+    metadatas: list[dict]
+    ids: list[str]
+
+
 class SimilaritySearchByVectorPayload(BaseModel):
     embedding: list[float]
     k: int
@@ -50,7 +56,6 @@ class GetByIdsResponse(BaseModel):
     metadata: dict
 
 
-# @app.post("/delete")
 @app.delete("/delete")
 def delete(ids: list[str]):
 
@@ -112,6 +117,28 @@ def similarity_search_by_vector(
         )
         for memory in memories
     ]
+
+
+@app.post("/add-embeddings")
+def add_texts(payload: AddEmbeddingsPayload) -> list[str]:
+
+    with Session(engine) as session:
+
+        memories = [
+            Memoria(
+                id=id,
+                embedding=embedding,
+                metadados=metadadata,
+            )
+            for embedding, metadadata, id in zip(
+                payload.embeddings, payload.metadatas, payload.ids
+            )
+        ]
+
+        session.add_all(memories)
+        session.commit()
+
+    return payload.ids
 
 
 @app.post("/add-texts")

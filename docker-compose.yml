@@ -1,0 +1,16 @@
+services:
+
+  db:
+    image: pgvector/pgvector:0.8.0-pg17
+    restart: always
+    environment:
+      POSTGRES_USER: langchain
+      POSTGRES_PASSWORD: langchain
+      POSTGRES_DB: langchain
+    ports:
+      - "6024:5432"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
